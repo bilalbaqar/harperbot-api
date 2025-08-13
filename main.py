@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import health
+from routers import health, chat
 
 app = FastAPI(
     title="HarperBot API",
@@ -19,6 +19,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(health.router, tags=["health"])
+app.include_router(chat.router, tags=["chat"])
 
 if __name__ == "__main__":
     import uvicorn

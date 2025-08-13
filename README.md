@@ -17,7 +17,8 @@ harperbot-api/
 ├── main.py              # Application entry point
 ├── routers/             # Route organization
 │   ├── __init__.py
-│   └── health.py        # Health check endpoints
+│   ├── health.py        # Health check endpoints
+│   └── chat.py          # Chat endpoints with OpenAI integration
 ├── requirements.txt     # Python dependencies
 └── README.md           # Project documentation
 ```
@@ -45,6 +46,26 @@ harperbot-api/
 - **GET** `/health`
   - Returns: `{"status": "ok"}`
   - Purpose: Health monitoring and API status verification
+
+### Chat
+- **POST** `/chat`
+  - Request Body:
+    ```json
+    {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Hello, how are you?"
+        }
+      ]
+    }
+    ```
+  - Returns: `{"response": "I'm doing well, thank you for asking!"}`
+  - Purpose: Generate AI responses using OpenAI GPT-5 responses API
+  - Features:
+    - Uses GPT-5 responses API with minimal reasoning effort
+    - Takes the last user message as input
+    - Comprehensive error handling
 
 ## Development
 
