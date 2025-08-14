@@ -18,7 +18,13 @@ harperbot-api/
 ├── routers/             # Route organization
 │   ├── __init__.py
 │   ├── health.py        # Health check endpoints
-│   └── chat.py          # Chat endpoints with OpenAI integration
+│   ├── chat.py          # Chat endpoints with OpenAI integration
+│   └── react_agent.py   # ReAct agent endpoints
+├── src/react_agent/     # ReAct agent implementation
+│   ├── __init__.py
+│   ├── graph.py         # Main agent graph
+│   ├── tools.py         # Available tools
+│   └── prompts.py       # System prompts
 ├── requirements.txt     # Python dependencies
 └── README.md           # Project documentation
 ```
@@ -66,6 +72,31 @@ harperbot-api/
     - Uses GPT-5 responses API with minimal reasoning effort
     - Takes the last user message as input
     - Comprehensive error handling
+
+### ReAct Agent
+- **POST** `/react`
+  - Request Body:
+    ```json
+    {
+      "query": "What's the weather like in New York?",
+      "model": "gpt-4",
+      "max_iterations": 5
+    }
+    ```
+  - Returns: 
+    ```json
+    {
+      "answer": "Based on my search, the weather in New York is...",
+      "reasoning_steps": ["Step 1: I need to search for current weather...", "Step 2: Found weather information..."],
+      "tools_used": ["search_web"]
+    }
+    ```
+  - Purpose: Advanced reasoning agent that can use tools to answer complex questions
+  - Features:
+    - ReAct (Reasoning + Acting) architecture based on LangGraph
+    - Available tools: web search, calculator, time lookup, weather lookup
+    - Supports both OpenAI and Anthropic models
+    - Step-by-step reasoning with tool usage
 
 ## Development
 

@@ -24,7 +24,7 @@ class ChatResponse(BaseModel):
 
 # OpenAI client will be initialized in the function to avoid startup errors
 
-@router.post("/chat", response_model=ChatResponse)
+@router.post("/chat-gpt-5", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """
     Chat endpoint that uses OpenAI GPT-5 responses API to generate responses
