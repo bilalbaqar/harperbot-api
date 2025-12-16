@@ -36,6 +36,8 @@ harperbot-api/
    pip install -r requirements.txt
    ```
 
+   Create your environment file from `.env.example` and fill in values.
+
 2. **Run the application:**
    ```bash
    python main.py
@@ -45,6 +47,11 @@ harperbot-api/
    ```bash
    uvicorn main:app --reload
    ```
+
+3. **(Optional) Enable course syllabus retrieval (Pinecone):**
+   - Set `PINECONE_API_KEY` and `PINECONE_INDEX`
+   - Optional: `PINECONE_NAMESPACE`, `PINECONE_HOST` (serverless) or `PINECONE_ENVIRONMENT` (legacy)
+   - The `course_details` tool embeds the user query with OpenAI embeddings (`COURSE_EMBEDDING_MODEL`, default `text-embedding-3-small`) and queries Pinecone for syllabus chunks.
 
 ## API Endpoints
 
@@ -94,7 +101,7 @@ harperbot-api/
   - Purpose: Advanced reasoning agent that can use tools to answer complex questions
   - Features:
     - ReAct (Reasoning + Acting) architecture based on LangGraph
-    - Available tools: web search, calculator, time lookup, weather lookup
+    - Available tools: web search, calculator, time lookup, weather lookup, course details
     - Supports both OpenAI and Anthropic models
     - Step-by-step reasoning with tool usage
 
