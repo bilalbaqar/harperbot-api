@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
+import re
 
 # Load environment variables
 load_dotenv()
@@ -13,7 +14,7 @@ load_dotenv()
 # Import tools
 import sys
 sys.path.append('src')
-from react_agent.tools import get_tools
+from react_agent.tools import get_tools, course_details
 
 router = APIRouter()
 
@@ -51,15 +52,40 @@ def create_simple_react_agent(query: str, model: str = "gpt-4", max_iterations: 
     # Get available tools
     tools = get_tools()
     tool_names = [tool.name for tool in tools]
-    
+
+    def is_course_query(text: str) -> bool:
+        lowered = text.lower()
+        keywords = [
+            "course", "syllabus", "instructor", "professor", "schedule", "office hours",
+            "prereq", "prerequisite", "credits", "semester", "midterm", "final", "assignments",
+        ]
+        if any(k in lowered for k in keywords):
+            return True
+        # Common course-code patterns like CS101, CS 101, MATH-220, etc.
+        if re.search(r"\b[A-Z]{2,6}[- ]?\d{2,4}\b", text):
+            return True
+        return False
+
+    course_context = None
+    tools_used = []
+    if is_course_query(query):
+        try:
+            course_context = course_details.invoke(query)
+            tools_used.append("course_details")
+        except Exception as e:
+            course_context = f"Course syllabus retrieval failed: {str(e)}"
+
     # Create system prompt
-    system_prompt = f"""You are a helpful AI assistant that can reason about questions and use tools to find answers.
+    system_prompt = f"""You are a helpful AI assistant that can answer questions and use provided context to be accurate.
 
 Available tools: {', '.join(tool_names)}
 
-Think step by step about what you need to do to answer the user's question. You can use tools if needed.
+If the user's question is about a course, use the provided course syllabus context (if present) as the primary source of truth. If the context is missing or insufficient, say what is missing and what you'd need.
 
 User question: {query}
+
+Course syllabus context:
+{course_context if course_context else "(none)"} 
 
 Please provide a clear, helpful answer. If you need to use a tool, mention which one you would use and why."""
     
@@ -75,7 +101,7 @@ Please provide a clear, helpful answer. If you need to use a tool, mention which
     return {
         "answer": response.content,
         "reasoning_steps": [response.content],
-        "tools_used": []
+        "tools_used": tools_used
     }
 
 @router.post("/react", response_model=ReActResponse)
