@@ -20,41 +20,6 @@ curl -X POST http://localhost:8000/api/chat \
   -H "Content-Type: application/json" \
   -d '{"message": "What courses fulfill the Decisions requirement?", "conversation_history": []}'
 ```
-<<<<<<< Updated upstream
-harperbot-api/
-├── main.py              # Application entry point
-├── routers/             # Route organization
-│   ├── __init__.py
-│   ├── health.py        # Health check endpoints
-│   ├── chat.py          # Chat endpoints with OpenAI integration
-│   └── react_agent.py   # ReAct agent endpoints
-├── src/react_agent/     # ReAct agent implementation
-│   ├── __init__.py
-│   ├── graph.py         # Main agent graph
-│   ├── tools.py         # Available tools
-│   └── prompts.py       # System prompts
-├── requirements.txt     # Python dependencies
-└── README.md           # Project documentation
-```
-
-## Setup
-
-1. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. **Run the application:**
-   ```bash
-   python main.py
-   ```
-   
-   Or using uvicorn directly:
-   ```bash
-   uvicorn main:app --reload
-   ```
-=======
->>>>>>> Stashed changes
 
 ## API Endpoints
 
@@ -66,32 +31,6 @@ harperbot-api/
 
 ### POST `/api/chat`
 
-<<<<<<< Updated upstream
-### ReAct Agent
-- **POST** `/react`
-  - Request Body:
-    ```json
-    {
-      "query": "What's the weather like in New York?",
-      "model": "gpt-4",
-      "max_iterations": 5
-    }
-    ```
-  - Returns: 
-    ```json
-    {
-      "answer": "Based on my search, the weather in New York is...",
-      "reasoning_steps": ["Step 1: I need to search for current weather...", "Step 2: Found weather information..."],
-      "tools_used": ["search_web"]
-    }
-    ```
-  - Purpose: Advanced reasoning agent that can use tools to answer complex questions
-  - Features:
-    - ReAct (Reasoning + Acting) architecture based on LangGraph
-    - Available tools: web search, calculator, time lookup, weather lookup
-    - Supports both OpenAI and Anthropic models
-    - Step-by-step reasoning with tool usage
-=======
 **Request:**
 ```json
 {
@@ -102,7 +41,6 @@ harperbot-api/
   ]
 }
 ```
->>>>>>> Stashed changes
 
 **Response:**
 ```json
@@ -116,7 +54,7 @@ harperbot-api/
 
 ## Deploy to Railway
 
-1. Push this directory to a GitHub repo
+1. Push this repo to GitHub
 2. Go to [railway.app](https://railway.app) → New Project → Deploy from GitHub
 3. Set env var: `ANTHROPIC_API_KEY`
 4. Railway auto-deploys on every push
@@ -133,8 +71,28 @@ harperbot-api/
 | `get_bid_history` | Bidding point history for a course |
 | `search_bidding_by_name` | Find course number from name for bidding lookup |
 
+## Project Structure
+
+```
+harperbot-api/
+├── main.py                    # FastAPI app, /api/chat endpoint
+├── agent.py                   # Claude claude-sonnet-4-6 tool_use loop
+├── tools/
+│   ├── degree_requirements.py # Hardcoded MBA degree + concentration data
+│   ├── course_search.py       # Pandas search on all-course-list.csv
+│   └── bidding_history.py     # Pandas query on bidding-history.csv
+├── data/
+│   ├── all-course-list.csv    # 619 course offerings
+│   └── bidding-history.csv    # 1,278 bidding records
+├── scripts/
+│   └── test_local.py          # Smoke test (no LLM + LLM)
+├── requirements.txt
+├── Procfile                   # Railway start command
+└── railway.json               # Railway config
+```
+
 ## Data
 
-CSV files in `data/` are loaded at startup:
+CSV files in `data/` are loaded at startup into pandas DataFrames:
 - `all-course-list.csv` — 619 course offerings (Winter 2025, Spring 2025, etc.)
 - `bidding-history.csv` — 1,278 historical bidding records
