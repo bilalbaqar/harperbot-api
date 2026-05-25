@@ -1,18 +1,26 @@
 # HarperBot API
 
-A FastAPI-based REST API for the HarperBot application.
+FastAPI backend for HarperBot — Chicago Booth MBA course assistant powered by Claude claude-sonnet-4-6.
 
-## Features
+## Local Development
 
-- FastAPI framework for high-performance API development
-- Modular router structure for organized code
-- CORS middleware with permissive settings for development
-- Health check endpoint
-- Automatic API documentation
+```bash
+# 1. Create .env
+cp .env.example .env
+# Add your ANTHROPIC_API_KEY
 
-## Project Structure
+# 2. Install dependencies
+pip install -r requirements.txt
 
+# 3. Run the API
+uvicorn main:app --reload --port 8000
+
+# 4. Test it
+curl -X POST http://localhost:8000/api/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message": "What courses fulfill the Decisions requirement?", "conversation_history": []}'
 ```
+<<<<<<< Updated upstream
 harperbot-api/
 ├── main.py              # Application entry point
 ├── routers/             # Route organization
@@ -45,34 +53,20 @@ harperbot-api/
    ```bash
    uvicorn main:app --reload
    ```
+=======
+>>>>>>> Stashed changes
 
 ## API Endpoints
 
-### Health Check
-- **GET** `/health`
-  - Returns: `{"status": "ok"}`
-  - Purpose: Health monitoring and API status verification
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/health` | Health check |
+| POST | `/api/chat` | Main chat endpoint |
+| GET | `/api/examples` | Sample questions |
 
-### Chat
-- **POST** `/chat`
-  - Request Body:
-    ```json
-    {
-      "messages": [
-        {
-          "role": "user",
-          "content": "Hello, how are you?"
-        }
-      ]
-    }
-    ```
-  - Returns: `{"response": "I'm doing well, thank you for asking!"}`
-  - Purpose: Generate AI responses using OpenAI GPT-5 responses API
-  - Features:
-    - Uses GPT-5 responses API with minimal reasoning effort
-    - Takes the last user message as input
-    - Comprehensive error handling
+### POST `/api/chat`
 
+<<<<<<< Updated upstream
 ### ReAct Agent
 - **POST** `/react`
   - Request Body:
@@ -97,25 +91,50 @@ harperbot-api/
     - Available tools: web search, calculator, time lookup, weather lookup
     - Supports both OpenAI and Anthropic models
     - Step-by-step reasoning with tool usage
+=======
+**Request:**
+```json
+{
+  "message": "What are the bid points for 35000?",
+  "conversation_history": [
+    {"role": "user", "content": "..."},
+    {"role": "assistant", "content": "..."}
+  ]
+}
+```
+>>>>>>> Stashed changes
 
-## Development
+**Response:**
+```json
+{
+  "response": "Here is the bidding history for 35000 — Investments...",
+  "tool_calls": [
+    {"tool": "get_bid_history", "input": {"course_number": "35000"}, "result_preview": "..."}
+  ]
+}
+```
 
-The API runs on `http://localhost:8000` by default.
+## Deploy to Railway
 
-### API Documentation
-- **Swagger UI**: `http://localhost:8000/docs`
-- **ReDoc**: `http://localhost:8000/redoc`
+1. Push this directory to a GitHub repo
+2. Go to [railway.app](https://railway.app) → New Project → Deploy from GitHub
+3. Set env var: `ANTHROPIC_API_KEY`
+4. Railway auto-deploys on every push
 
-### CORS Settings
-The API includes permissive CORS settings for development:
-- All origins allowed (`*`)
-- All methods allowed
-- All headers allowed
-- Credentials enabled
+## Tools Available
 
-**Note**: These settings are for development only. Configure more restrictive CORS settings for production.
+| Tool | Description |
+|------|-------------|
+| `check_degree_requirements` | MBA degree requirements checker |
+| `check_concentration_requirements` | Concentration requirements checker |
+| `search_courses` | Full-text course search (title, instructor, time, quarter) |
+| `lookup_course_by_number` | Get all sections for a course number |
+| `get_course_title` | Course number → title lookup |
+| `get_bid_history` | Bidding point history for a course |
+| `search_bidding_by_name` | Find course number from name for bidding lookup |
 
-## Dependencies
+## Data
 
-- **FastAPI**: Modern, fast web framework for building APIs
-- **Uvicorn**: ASGI server for running FastAPI applications
+CSV files in `data/` are loaded at startup:
+- `all-course-list.csv` — 619 course offerings (Winter 2025, Spring 2025, etc.)
+- `bidding-history.csv` — 1,278 historical bidding records
