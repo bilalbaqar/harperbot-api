@@ -1,6 +1,6 @@
 # HarperBot API — Agent Context
 
-This file gives AI coding assistants full context on the project so they can contribute without needing to rediscover things.
+This is the single source of truth for AI coding assistants. It is read directly by agents that look for `AGENTS.md` (e.g., OpenAI Codex, Gemini). Claude Code users are pointed here via `CLAUDE.md`, which contains a single `@AGENTS.md` import — so this file loads automatically when opening the project in Claude Code.
 
 ---
 
